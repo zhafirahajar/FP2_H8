@@ -1,6 +1,6 @@
 "use strict";
-const { Model } = require("sequelize");
-module.exports = (sequelize, DataTypes) => {
+const { Model, DataTypes } = require("sequelize");
+module.exports = (sequelize) => {
 	class User extends Model {
 		/**
 		 * Helper method for defining associations.
@@ -15,48 +15,106 @@ module.exports = (sequelize, DataTypes) => {
 		{
 			full_name: {
 				type: DataTypes.STRING,
-				validate: { notNull: true },
+				allowNull: false,
+				validate: {
+					notNull: {
+						msg: "Full name required",
+					},
+					notEmpty: {
+						args: true,
+						msg: "Full name cannot be empty",
+					},
+				},
 			},
 			email: {
 				type: DataTypes.STRING,
+				allowNull: false,
 				validate: {
-					isEmail: true,
-					unique: true,
-					notNull: true,
+					isEmail: {
+						args: true,
+						msg: "Invalid email format",
+					},
+					notNull: {
+						msg: "Email required",
+					},
+					notEmpty: {
+						args: true,
+						msg: "Email cannot be empty",
+					},
 				},
 			},
 			username: {
 				type: DataTypes.STRING,
+				allowNull: false,
 				validate: {
-					notNull: true,
-					unique: true,
+					notNull: {
+						msg: "Username required",
+					},
+					notEmpty: {
+						args: true,
+						msg: "Username cannot be empty",
+					},
 				},
+				unique: true,
 			},
 			password: {
 				type: DataTypes.STRING,
+				allowNull: false,
 				validate: {
-					notNull: true,
+					notNull: {
+						msg: "Password required",
+					},
+					notEmpty: {
+						args: true,
+						msg: "Password cannot be empty",
+					},
 				},
 			},
 			profile_image_url: {
 				type: DataTypes.TEXT,
+				allowNull: false,
 				validate: {
-					isUrl: true,
-					notNull: true,
+					isUrl: {
+						args: true,
+						msg: "Invalid URL format",
+					},
+					notNull: {
+						msg: "Profile image URL required",
+					},
+					notEmpty: {
+						args: true,
+						msg: "Profile image URL cannot be empty",
+					},
 				},
 			},
 			age: {
 				type: DataTypes.INTEGER,
+				allowNull: false,
 				validate: {
-					notNull: true,
-					isInt: true,
+					isInt: {
+						args: true,
+						msg: "Age must be an integer value",
+					},
+					notNull: {
+						msg: "Age required",
+					},
+					notEmpty: {
+						args: true,
+						msg: "Age cannot be empty",
+					},
 				},
 			},
 			phone_number: {
-				type: DataTypes.INTEGER,
+				type: DataTypes.TEXT,
+				allowNull: false,
 				validate: {
-					notNull: true,
-					isInt: true,
+					notNull: {
+						msg: "Phone number required",
+					},
+					notEmpty: {
+						args: true,
+						msg: "Phone number cannot be empty",
+					},
 				},
 			},
 		},

@@ -1,73 +1,33 @@
 const route = require("express").Router();
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { User } = require("../models");
-const userController = require("../controllers/userControllers");
+const userControllers = require("../controllers/userControllers");
 
-route.get("/", (req, res) => {
-	res.json({
-		page: "Home",
-	});
-});
+// USER REGIS - LOGIN ROUTE
+route.post("/users/register", userControllers.register);
+route.post("/users/login", userControllers.login);
 
-route.post("/register", userController.register);
+// MIDDLEWARE CHECK TOKEN
+route.use(userControllers.loginMiddleware);
 
-route.post("/login", (req, res) => {
-	User.findOne({
-		where: {
-			name: req.body.name,
-		},
-	})
-		.then((data) => {
-			if (data === null) {
-				res.status(401).json({ messege: "Invalid Credentials" });
-			} else {
-				let compare = bcrypt.compareSync(req.body.password, data.password);
-				if (compare == true) {
-					let token = jwt.sign(data.toJSON(), "ini rahasia");
-					res.status(200).json({ token: token });
-				} else {
-					res.status(401).json({ messege: "Invalid Credentials" });
-				}
-			}
-		})
-		.catch((err) => {
-			res.status(500).json(err);
-		});
-});
+// USER MANAGEMENT ROUTE
+route.put("/users/:userId", userControllers.edit);
+route.delete("/users/:userIde", userControllers.delete);
 
-//middleware pengecekan auth token login
-route.use((req, res, next) => {
-	try {
-		let token = req.headers.token;
-		let decoded = jwt.verify(token, "secretkey");
-		User.findOne({
-			where: {
-				name: decoded.name,
-			},
-		})
-			.then((data) => {
-				if (data !== null) {
-					next();
-				} else {
-					res.status(401).json({ messege: "Invalid Credentials" });
-				}
-			})
-			.catch((err) => {
-				res.status(500).json(err);
-			});
-	} catch (err) {
-		console.log("error nih! jwt nya manaa!");
-		res.status(500).json(err);
-	}
-});
+// PHOTOS ROUTE
+route.post("/photos");
+route.get("/photos");
+route.put("/photos/:photoId");
+route.delete("/photos/:photoId");
 
-route.get("/users", userController.getAll);
+// COMMENTS ROUTE
+route.post("/comments");
+route.get("/comments");
+route.put("/comments/:commentId");
+route.delete("/comments/:commentId");
 
-route.get("/users/:id", userController.getOne);
-
-route.post("/users/:id/edit", userController.edit);
-
-route.post("/users/:id/delete", userController.delete);
+// SOCIAL MEDIAS ROUTE
+route.post("/socialmedias");
+route.get("/socialmedias");
+route.put("/socialmedias/:socialmediaId");
+route.delete("/socialmedias/:socialmediaId");
 
 module.exports = route;
