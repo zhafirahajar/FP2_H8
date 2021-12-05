@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //URL
-// app.use(route);
+app.use(route);
 
 //START PORT
 app.listen(port, () => {
