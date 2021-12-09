@@ -42,6 +42,10 @@ module.exports = (sequelize) => {
 						msg: "Email cannot be empty",
 					},
 				},
+				unique: {
+					args: true,
+					msg: "Email already registered, use another email",
+				},
 			},
 			username: {
 				type: DataTypes.STRING,
@@ -55,7 +59,10 @@ module.exports = (sequelize) => {
 						msg: "Username cannot be empty",
 					},
 				},
-				unique: true,
+				unique: {
+					args: true,
+					msg: "Username already taken, use another username",
+				},
 			},
 			password: {
 				type: DataTypes.STRING,

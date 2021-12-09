@@ -90,49 +90,121 @@ class userController {
 			});
 	}
 
-	// WORK ON PROGRESS -zhafira
-	static edit(req, res) {
-		User.update(
-			{
-				full_name: req.body.full_name,
-				email: req.body.email,
-				username: req.body.username,
-				password: hash,
-				profile_image_url: req.body.profile_image_url,
-				age: req.body.age,
-				phone_number: req.body.phone_number,
+	static async edit(req, res) {
+		let user_instance = await User.findOne({
+			where: {
+				id: req.params.userId,
 			},
-			{
-				where: {
-					id: req.params.id,
-				},
-			}
-		)
-			.then((data) => {
-				res.status(201).json(data);
-			})
-			.catch((err) => {
-				res.status(500).json(err);
+		});
+
+		let token = req.headers.token;
+		let user_login = jwt.verify(token, "secretkey");
+
+		if (user_instance == null) {
+			res.status(401).json({
+				message: "Account doesn't exitst",
 			});
+		}
+
+		if (user_login.username != user_instance.username) {
+			res.status(401).json({
+				message: "You dont have permission on this user.",
+			});
+		} else {
+			let full_name_data =
+				req.body.full_name == undefined
+					? user_instance.full_name
+					: req.body.full_name;
+			let email_data =
+				req.body.email == undefined ? user_instance.email : req.body.email;
+			let username_data =
+				req.body.username == undefined
+					? user_instance.username
+					: req.body.username;
+			let profile_image_url_data =
+				req.body.profile_image_ur == undefined
+					? user_instance.profile_image_ur
+					: req.body.profile_image_ur;
+			let age_data =
+				req.body.age == undefined ? user_instance.age : req.body.age;
+			let phone_number_data =
+				req.body.phone_number == undefined
+					? user_instance.phone_number
+					: req.body.phone_number;
+
+			user_instance
+				.update({
+					full_name: full_name_data,
+					email: email_data,
+					username: username_data,
+					profile_image_url: profile_image_url_data,
+					age: age_data,
+					phone_number: phone_number_data,
+				})
+				.then(async (data) => {
+					if (req.body.password) {
+						let pass_user = user_instance.password;
+						let compare = bcrypt.compareSync(req.body.password, pass_user);
+						if (compare) {
+							res.status(400).json({
+								message: "Use different password!",
+							});
+						} else {
+							let salt = bcrypt.genSaltSync(10);
+							let hash = bcrypt.hashSync(req.body.password, salt);
+							await user_instance.update({
+								password: hash,
+							});
+							res.status(200).json({
+								user: data,
+							});
+						}
+					} else {
+						res.status(200).json({
+							user: data,
+						});
+					}
+				})
+				.catch((err) => {
+					if (err.name == "SequelizeUniqueConstraintError") {
+						res.status(400).json({
+							error: err.name,
+							message: err.message,
+						});
+					}
+				});
+		}
 	}
 
-	// WORK ON PROGRESS -zhafira
-	static delete(req, res) {
-		User.destroy({
+	static async delete(req, res) {
+		let user_instance = await User.findOne({
 			where: {
-				id: req.params.id,
+				id: req.params.userId,
 			},
-		})
-			.then((data) => {
-				if (data > 0) {
-					res.status(200).json(data);
-				} else {
-					res.status(404).json(data);
-				}
-			})
-			.catch((err) => {
-				res.status(500).json(err);
+		});
+
+		let token = req.headers.token;
+		let user_login = jwt.verify(token, "secretkey");
+		if (user_instance == null) {
+			res.status(401).json({
+				message: "Account doesn't exist.",
 			});
+		} else if (user_login.username != user_instance.username) {
+			res.status(404).json({
+				message: "You dont have permission on this user.",
+			});
+		} else {
+			user_instance
+				.destroy()
+				.then(() => {
+					res.status(200).json({
+						message: "Your account has been successfully deleted.",
+					});
+				})
+				.catch((err) => {
+					res.status(500).json(err);
+				});
+		}
 	}
 }
 
