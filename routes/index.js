@@ -10,7 +10,7 @@ route.use(userControllers.loginMiddleware);
 
 // USER MANAGEMENT ROUTE
 route.put("/users/:userId", userControllers.edit);
-route.delete("/users/:userIde", userControllers.delete);
+route.delete("/users/:userId", userControllers.delete);
 
 // PHOTOS ROUTE
 route.post("/photos");
