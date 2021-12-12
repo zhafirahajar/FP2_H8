@@ -101,34 +101,37 @@ class userController {
 		let user_login = jwt.verify(token, "secretkey");
 
 		if (user_instance == null) {
-			res.status(401).json({
+			res.status(404).json({
 				message: "Account doesn't exitst",
 			});
-		}
-
-		if (user_login.username != user_instance.username) {
+		} else if (user_login.username != user_instance.username) {
 			res.status(401).json({
 				message: "You dont have permission on this user.",
 			});
 		} else {
 			let full_name_data =
-				req.body.full_name == undefined
+				req.body.full_name == undefined || req.body.full_name == ""
 					? user_instance.full_name
 					: req.body.full_name;
 			let email_data =
-				req.body.email == undefined ? user_instance.email : req.body.email;
+				req.body.email == undefined || req.body.email == ""
+					? user_instance.email
+					: req.body.email;
 			let username_data =
-				req.body.username == undefined
+				req.body.username == undefined || req.body.username == ""
 					? user_instance.username
 					: req.body.username;
 			let profile_image_url_data =
-				req.body.profile_image_ur == undefined
+				req.body.profile_image_ur == undefined ||
+				req.body.profile_image_ur == ""
 					? user_instance.profile_image_ur
 					: req.body.profile_image_ur;
 			let age_data =
-				req.body.age == undefined ? user_instance.age : req.body.age;
+				req.body.age == undefined || req.body.age == ""
+					? user_instance.age
+					: req.body.age;
 			let phone_number_data =
-				req.body.phone_number == undefined
+				req.body.phone_number == undefined || req.body.phone_number == ""
 					? user_instance.phone_number
 					: req.body.phone_number;
 
@@ -186,11 +189,11 @@ class userController {
 		let token = req.headers.token;
 		let user_login = jwt.verify(token, "secretkey");
 		if (user_instance == null) {
-			res.status(401).json({
+			res.status(404).json({
 				message: "Account doesn't exist.",
 			});
 		} else if (user_login.username != user_instance.username) {
-			res.status(404).json({
+			res.status(401).json({
 				message: "You dont have permission on this user.",
 			});
 		} else {
