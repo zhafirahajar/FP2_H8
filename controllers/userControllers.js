@@ -105,7 +105,7 @@ class userController {
 				message: "Account doesn't exitst",
 			});
 		} else if (user_login.username != user_instance.username) {
-			res.status(401).json({
+			res.status(403).json({
 				message: "You dont have permission on this user.",
 			});
 		} else {
@@ -193,7 +193,7 @@ class userController {
 				message: "Account doesn't exist.",
 			});
 		} else if (user_login.username != user_instance.username) {
-			res.status(401).json({
+			res.status(403).json({
 				message: "You dont have permission on this user.",
 			});
 		} else {
