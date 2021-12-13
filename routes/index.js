@@ -1,5 +1,6 @@
 const route = require("express").Router();
 const userControllers = require("../controllers/userControllers");
+const socialMediaControllers = require("../controllers/socialMediaControllers");
 
 // USER REGIS - LOGIN ROUTE
 route.post("/users/register", userControllers.register);
@@ -25,9 +26,9 @@ route.put("/comments/:commentId");
 route.delete("/comments/:commentId");
 
 // SOCIAL MEDIAS ROUTE
-route.post("/socialmedias");
-route.get("/socialmedias");
-route.put("/socialmedias/:socialmediaId");
-route.delete("/socialmedias/:socialmediaId");
+route.post("/socialmedias", socialMediaControllers.create);
+route.get("/socialmedias", socialMediaControllers.read);
+route.put("/socialmedias/:socialmediaId", socialMediaControllers.update);
+route.delete("/socialmedias/:socialmediaId", socialMediaControllers.delete);
 
 module.exports = route;
