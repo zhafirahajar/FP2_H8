@@ -40,11 +40,17 @@ class userController {
 				if (err.name.includes("Sequelize")) {
 					errCode = 400;
 				}
-				res.status(errCode).json({
-					error: err.name,
-					// message: err.errors[0].message,
-					message: errMessages,
-				});
+				if (err.errors) {
+					res.status(errCode).json({
+						error: err.name,
+						message: errMessages,
+					});
+				} else {
+					res.status(errCode).json({
+						error: err.name,
+						message: err.message,
+					});
+				}
 			});
 	}
 
