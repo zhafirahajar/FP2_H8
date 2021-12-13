@@ -49,7 +49,27 @@ class socialMediaController {
 			});
 	}
 
-	static read(req, res) {}
+	static read(req, res) {
+		let token = req.headers.token;
+		let user = jwt.verify(token, "secretkey");
+		SocialMedia.findAll({
+			include: {
+				model: User,
+				attributes: ["id", "username", "profile_image_url"],
+			},
+			where: {
+				UserId: user.id,
+			},
+		})
+			.then((data) => {
+				res.status(200).json({
+					social_media: data,
+				});
+			})
+			.catch((err) => {
+				res.status(500).json(err);
+			});
+	}
 
 	static update(req, res) {}
 
