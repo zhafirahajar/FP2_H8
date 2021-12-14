@@ -9,21 +9,40 @@ module.exports = (sequelize, DataTypes) => {
 		 */
 		static associate(models) {
 			// define association here
+			//relasi social media -> user
+			//SocialMedia.belongsTo(models.User, {foreignKey: "Userid"})
 		}
 	}
 	SocialMedia.init(
 		{
 			name: {
 				type: DataTypes.STRING,
+				allowNull: false,
 				validate: {
-					allowNull: false,
+					notNull: {
+						msg: "name required",
+					},
+					notEmpty: {
+						args: true,
+						msg: "name cannot be empty",
+					},
 				},
 			},
 			social_media_url: {
 				type: DataTypes.STRING,
+				allowNull: false,
 				validate: {
-					allowNull: false,
-					isUrl: true,
+					isUrl: {
+						args: true,
+						msg: "Invalid URL format",
+					},
+					notNull: {
+						msg: "URL required",
+					},
+					notEmpty: {
+						args: true,
+						msg: "URL cannot be empty",
+					},
 				},
 			},
 			Userid: DataTypes.INTEGER,

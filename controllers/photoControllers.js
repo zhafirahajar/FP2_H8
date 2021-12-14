@@ -1,0 +1,141 @@
+const { Photo, Comment, User } = require("../models");
+const jwt = require("jsonwebtoken");
+
+class photoControllers{
+    //post new photo
+    static async create(req, res){  
+        let token = req.headers.token;
+		let user_login = jwt.verify(token, "secretkey");
+ 
+        let input = {
+            poster_image_url : req.body.poster_image_url,
+            title : req.body.title,
+            caption : req.body.caption,
+            UserId : user_login.id
+        }
+
+        Photo.create(input)
+            .then((data) => {
+                res.status(201).json({
+                    id : data.id,
+                    poster_image_url: data.poster_image_url,
+                    title : data.title,
+                    caption: data.caption,
+                    UserId: data.UserId
+                });
+            })
+            .catch((err) => {
+                let errCode = 500;
+                let msg = ''
+                if(err.name.includes("SequelizeForeignKeyConstraint")){
+                    errCode = 400
+                    msg = err.parent.detail
+                }else if (err.name.includes("SequelizeValidation")) {
+                    errCode = 400
+                    msg = err.errors
+                }
+                res.status(errCode).json({
+                    message: msg
+                })
+                
+            });                 
+    }
+    
+    //show all photos => return ke user belum sesuai ada di section comment
+    static index(req, res){
+        Photo.findAll({
+            include : [
+                {model: Comment, attributes: ['comment']},
+                {model: User, attributes: ['id', 'username', 'profile_image_url']}            
+            ]
+        })
+        .then(data=>{
+            res.status(200).json({
+                "photos" : data
+            })
+        })
+        .catch(err=>{
+            console.log(err)
+            res.status(500).json(err)
+        })
+    }
+
+ //edit photos
+ //params tidak di kirim dia masih bisa lolos
+    static async edit(req, res){
+    let token = req.headers.token;
+    let user_login = jwt.verify(token, "secretkey");
+    let photo_instance = await Photo.findOne({
+        where: {
+            id: req.params.photoId
+        },
+    }); 
+    
+    if(photo_instance === null){
+        res.status(404).json({msg: "Photo doest not exists"})
+    }
+
+    if(user_login.id !== photo_instance.UserId){
+        res.status(403).json({msg: "You dont have permision on this photo"})
+    }else{
+        photo_instance.update({
+            /*
+            title : (req.body.title === undefined || req.body.title  === null || req.body.title === "") ? photo_instance.title : req.body.title,
+            caption : (req.body.caption === undefined || req.body.caption === null || req.body.caption === "") ? photo_instance.caption : req.body.caption,
+            poster_image_url: (req.body.poster_image_url === undefined || req.body.poster_image_url === null || req.body.poster_image_url === "") ? photo_instance.poster_image_url : req.body.poster_image_url
+            */
+           title : req.body.title,
+           caption : req.body.caption,
+           poster_image_url: req.body.poster_image_url
+
+        }).then(data=>{
+            res.status(200).json({
+                photo:  data
+            })
+        }).catch(err=>{
+            //console.log(err)
+            res.status(500).json(err)
+        })
+    }
+       
+
+    }
+
+
+    //catatan buat delete, photo, kalo masih ada comentar yang masih ngereference ke dia errror
+    static async delete(req, res) { 
+        let token = req.headers.token;
+        let user_login = jwt.verify(token, "secretkey");
+        let photo_instance = await Photo.findOne({
+            where: {
+                id: req.params.photoId
+            },
+        }); 
+
+        //console.log(photo_instance)
+        
+        if (photo_instance === null) {
+            res.status(404).json({
+                message: "Photo doesn't exist.",
+            });
+        } else if (user_login.id != photo_instance.UserId) {
+            res.status(403).json({
+                message: "You dont have permission on this user.",
+            });
+        } else {
+            photo_instance
+                .destroy()
+                .then(() => {
+                    res.status(200).json({
+                        message: "Your Photo has been successfully deleted.",
+                    });
+                })
+                .catch((err) => {
+                    res.status(500).json(err);
+                });
+        }
+          
+	}
+}
+
+module.exports = photoControllers

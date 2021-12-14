@@ -9,6 +9,12 @@ module.exports = (sequelize) => {
 		 */
 		static associate(models) {
 			// define association here
+			//relasi ke table user -> photo
+			User.hasMany(models.Photo, {foreignKey: "UserId"})
+			//relasi ke table user -> comment
+			User.hasMany(models.Comment, {foreignKey: "UserId"})
+			//relasi user -> socialmedia
+			//User.hasMany(models.SocialMedia, {foreignKey: "Userid"})
 		}
 	}
 	User.init(
