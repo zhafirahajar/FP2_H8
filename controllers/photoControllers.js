@@ -1,4 +1,4 @@
-const { Photo, Comment, User } = require("../models");
+const { Photo, Comment, User, Sequelize } = require("../models");
 const jwt = require("jsonwebtoken");
 
 class photoControllers{
@@ -41,11 +41,20 @@ class photoControllers{
             });                 
     }
     
-    //show all photos => return ke user belum sesuai ada di section comment
     static index(req, res){
         Photo.findAll({
             include : [
-                {model: Comment, attributes: ['comment']},
+                {
+                    model: Comment,
+                    attributes: ['comment'],
+                    //required: true,
+                    //attributes: ['comment', [Sequelize.literal('"User"."username"'), 'username']]
+                    include: [{
+                        model: User,
+                        attributes : ['username']
+                    }]
+                },
+
                 {model: User, attributes: ['id', 'username', 'profile_image_url']}            
             ]
         })
@@ -101,8 +110,6 @@ class photoControllers{
 
     }
 
-
-    //catatan buat delete, photo, kalo masih ada comentar yang masih ngereference ke dia errror
     static async delete(req, res) { 
         let token = req.headers.token;
         let user_login = jwt.verify(token, "secretkey");
