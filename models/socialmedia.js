@@ -1,16 +1,11 @@
 "use strict";
-const { Model } = require("sequelize");
-module.exports = (sequelize, DataTypes) => {
+const { Model, DataTypes } = require("sequelize");
+module.exports = (sequelize) => {
 	class SocialMedia extends Model {
-		/**
-		 * Helper method for defining associations.
-		 * This method is not a part of Sequelize lifecycle.
-		 * The `models/index` file will call this method automatically.
-		 */
 		static associate(models) {
 			// define association here
 			//relasi social media -> user
-			//SocialMedia.belongsTo(models.User, {foreignKey: "Userid"})
+			SocialMedia.belongsTo(models.User, { foreignKey: "UserId" });
 		}
 	}
 	SocialMedia.init(
@@ -20,16 +15,16 @@ module.exports = (sequelize, DataTypes) => {
 				allowNull: false,
 				validate: {
 					notNull: {
-						msg: "name required",
+						msg: "Name required",
 					},
 					notEmpty: {
 						args: true,
-						msg: "name cannot be empty",
+						msg: "Name cannot be empty",
 					},
 				},
 			},
 			social_media_url: {
-				type: DataTypes.STRING,
+				type: DataTypes.TEXT,
 				allowNull: false,
 				validate: {
 					isUrl: {
@@ -37,15 +32,15 @@ module.exports = (sequelize, DataTypes) => {
 						msg: "Invalid URL format",
 					},
 					notNull: {
-						msg: "URL required",
+						msg: "Social media URL required",
 					},
 					notEmpty: {
 						args: true,
-						msg: "URL cannot be empty",
+						msg: "Social media URL cannot be empty",
 					},
 				},
 			},
-			Userid: DataTypes.INTEGER,
+			UserId: DataTypes.INTEGER,
 		},
 		{
 			sequelize,
