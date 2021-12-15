@@ -1,6 +1,9 @@
 const route = require("express").Router();
 const userControllers = require("../controllers/userControllers");
+const photoControllers = require("../controllers/photoControllers");
+const commentController = require("../controllers/commentController")
 const socialMediaControllers = require("../controllers/socialMediaControllers");
+
 
 // USER REGIS - LOGIN ROUTE
 route.post("/users/register", userControllers.register);
@@ -14,16 +17,16 @@ route.put("/users/:userId", userControllers.edit);
 route.delete("/users/:userId", userControllers.delete);
 
 // PHOTOS ROUTE
-route.post("/photos");
-route.get("/photos");
-route.put("/photos/:photoId");
-route.delete("/photos/:photoId");
+route.post("/photos", photoControllers.create);
+route.get("/photos", photoControllers.index);
+route.put("/photos/:photoId", photoControllers.edit);
+route.delete("/photos/:photoId", photoControllers.delete);
 
 // COMMENTS ROUTE
-route.post("/comments");
-route.get("/comments");
-route.put("/comments/:commentId");
-route.delete("/comments/:commentId");
+route.post("/comments", commentController.create);
+route.get("/comments", commentController.index);
+route.put("/comments/:commentId", commentController.edit);
+route.delete("/comments/:commentId",commentController.delete);
 
 // SOCIAL MEDIAS ROUTE
 route.post("/socialmedias", socialMediaControllers.create);
