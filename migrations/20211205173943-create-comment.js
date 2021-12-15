@@ -9,6 +9,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       UserId: {
+        allowNull: false,
         type: Sequelize.INTEGER,
         references: {
           model: 'Users',
@@ -18,12 +19,13 @@ module.exports = {
         onUpdate: 'restrict'
       },
       PhotoId: {
+        allowNull: false,
         type: Sequelize.INTEGER,
         references: {
           model: "Photos",
           key: 'id'
         },
-        onDelete: 'restrict',
+        onDelete: 'cascade',
         onUpdate: 'restrict'
       },
       comment: {

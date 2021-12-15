@@ -9,16 +9,51 @@ module.exports = (sequelize, DataTypes) => {
 		 */
 		static associate(models) {
 			// define association here
+			//relasi comment -> user
+			Comment.belongsTo(models.User, {foreignKey: "UserId"})
+			//relasi comment ->photo
+			Comment.belongsTo(models.Photo, {foreignKey: "PhotoId"})
 		}
 	}
 	Comment.init(
 		{
-			UserId: DataTypes.INTEGER,
-			PhotoId: DataTypes.INTEGER,
+			UserId: {
+				type: DataTypes.INTEGER,
+				allowNull: false,
+				validate: {
+					notNull: {
+						msg: "UserId required",
+					},
+					notEmpty: {
+						args: true,
+						msg: "Userid cannot be empty",
+					},
+				}
+			},
+			PhotoId: {
+				type: DataTypes.INTEGER,
+				allowNull: false,
+				validate: {
+					notNull: {
+						msg: "PhotoID required",
+					},
+					notEmpty: {
+						args: true,
+						msg: "PhotoID cannot be empty",
+					},
+				}
+			},	
 			comment: {
 				type: DataTypes.TEXT,
+				allowNull: false,
 				validate: {
-					allowNull: false,
+					notNull: {
+						msg: "Comment required",
+					},
+					notEmpty: {
+						args: true,
+						msg: "Comment cannot be empty",
+					},
 				},
 			},
 		},
