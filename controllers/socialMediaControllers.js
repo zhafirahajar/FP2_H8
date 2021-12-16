@@ -1,11 +1,14 @@
 const { User, SocialMedia } = require("../models");
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+function get_user(req, res) {
+	let token = req.headers.token;
+	let user = jwt.verify(token, "secretkey");
+	return user;
+}
 class socialMediaController {
 	static create(req, res) {
-		let token = req.headers.token;
-		let user = jwt.verify(token, "secretkey");
+		let user = get_user(req, res);
 		let input = {
 			name: req.body.name,
 			social_media_url: req.body.social_media_url,
@@ -49,9 +52,8 @@ class socialMediaController {
 			});
 	}
 
-	static read(req, res) {
-		let token = req.headers.token;
-		let user = jwt.verify(token, "secretkey");
+	static index(req, res) {
+		let user = get_user(req, res);
 		SocialMedia.findAll({
 			include: {
 				model: User,
@@ -71,9 +73,35 @@ class socialMediaController {
 			});
 	}
 
-	static update(req, res) {}
+	static async update(req, res) {}
 
-	static delete(req, res) {}
+	static async delete(req, res) {
+		let user = get_user(req, res);
+		let sos_id = req.params.socialmediaId;
+		let sos_instance = await SocialMedia.findOne({
+			where: {
+				id: sos_id,
+			},
+		});
+		if (sos_instance == null) {
+			res.status(404).json({
+				message: "Social media doesn't exist.",
+			});
+		} else if (user.id != sos_instance.UserId) {
+			res.status(403).json({
+				message: "You dont have permission on this user.",
+			});
+		} else {
+			SocialMedia.destroy({
+				where: {
+					id: sos_id,
+				},
+			});
+			res.status(200).json({
+				message: "Your social media has been successfully deleted.",
+			});
+		}
+	}
 }
 
 module.exports = socialMediaController;
