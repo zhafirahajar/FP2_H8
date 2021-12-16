@@ -32,20 +32,21 @@ class userController {
 			})
 			.catch((err) => {
 				let errCode = 500;
+				let errMessages = [];
+
+				for (let index in err.errors) {
+					let errMsg = err.errors[index].message;
+					errMessages.push(errMsg);
+				}
+
 				if (err.name.includes("Sequelize")) {
 					errCode = 400;
 				}
-				if (err.errors) {
-					res.status(errCode).json({
-						error: err.name,
-						message: errMessages,
-					});
-				} else {
-					res.status(errCode).json({
-						error: err.name,
-						message: err.message,
-					});
-				}
+
+				res.status(errCode).json({
+					error: err.name,
+					message: errMessages,
+				});
 			});
 	}
 

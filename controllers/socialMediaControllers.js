@@ -35,21 +35,15 @@ class socialMediaController {
 					let errMsg = err.errors[index].message;
 					errMessages.push(errMsg);
 				}
+
 				if (err.name.includes("Sequelize")) {
 					errCode = 400;
 				}
 
-				if (err.errors) {
-					res.status(errCode).json({
-						error: err.name,
-						message: errMessages,
-					});
-				} else {
-					res.status(errCode).json({
-						error: err.name,
-						message: err.message,
-					});
-				}
+				res.status(errCode).json({
+					error: err.name,
+					message: errMessages,
+				});
 			});
 	}
 
