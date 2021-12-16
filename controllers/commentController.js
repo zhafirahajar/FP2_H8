@@ -28,16 +28,16 @@ class commentController{
         .catch(err=>{
             //console.log(err)
             let errCode = 500;
-            let msg = ''
+            let massage = ''
             if(err.name.includes("SequelizeForeignKeyConstraint")){
                 errCode = 400
-                msg = err.parent.detail
+                massage = err.parent.detail
             }else if (err.name.includes("SequelizeValidation")) {
                 errCode = 400
-                msg = err.errors
+                massage = err.errors
             }
             res.status(errCode).json({
-                message: msg
+                message: massage
             })
         })
     }
@@ -71,31 +71,20 @@ class commentController{
 		}); 
 
         if(comment_instance === null){
-            res.status(404).json({msg: "Comment doest not exists"})
+            res.status(404).json({massage: "Comment doest not exists"})
         }
 
         if(user_login.id !== comment_instance.UserId){
-            res.status(401).json({msg: "You dont have permission to edit this comment"})
+            res.status(401).json({massage: "You dont have permission to edit this comment"})
         }else{
-            Comment.update(
+            comment_instance.update(
                 {
                    comment : req.body.comment 
-                },{
-                    where: {
-                        id : req.params.commentId
-                    }
                 }
             )
             .then(data=>{
                 res.status(200).json({
-                    "comment" : {
-                        id : comment_instance.id,
-                        comment: comment_instance.comment, //take note
-                        UserId : comment_instance.UserId,
-                        PhotoId: comment_instance.PhotoId,
-                        updatedAt: comment_instance.updatedAt,
-                        createdAt: comment_instance.createdAt
-                    }
+                    comment : data
                 })
             })
             .catch(err=>{
@@ -115,11 +104,11 @@ class commentController{
 		}); 
 
         if(comment_instance === null){
-            res.status(404).json({msg: "Comment doest not exitst"})
+            res.status(404).json({massage: "Comment doest not exitst"})
         }
 
         if(comment_instance.UserId !== user_login.id){
-            res.status(401).json({msg: "You dont have permission to delete this comment"})
+            res.status(401).json({massage: "You dont have permission to delete this comment"})
         }else{
             comment_instance
             .destroy()

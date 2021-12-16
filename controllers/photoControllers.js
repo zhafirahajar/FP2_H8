@@ -26,16 +26,16 @@ class photoControllers{
             })
             .catch((err) => {
                 let errCode = 500;
-                let msg = ''
+                let massage = ''
                 if(err.name.includes("SequelizeForeignKeyConstraint")){
                     errCode = 400
-                    msg = err.parent.detail
+                    massage = err.parent.detail
                 }else if (err.name.includes("SequelizeValidation")) {
                     errCode = 400
-                    msg = err.errors
+                    massage = err.errors
                 }
                 res.status(errCode).json({
-                    message: msg
+                    message: massage
                 })
                 
             });                 
@@ -81,11 +81,11 @@ class photoControllers{
     }); 
     
     if(photo_instance === null){
-        res.status(404).json({msg: "Photo doest not exists"})
+        res.status(404).json({massage: "Photo doest not exists"})
     }
 
     if(user_login.id !== photo_instance.UserId){
-        res.status(403).json({msg: "You dont have permision on this photo"})
+        res.status(403).json({massage: "You dont have permision on this photo"})
     }else{
         photo_instance.update({
             /*
