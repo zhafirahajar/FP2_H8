@@ -44,7 +44,6 @@ class commentController{
         })
     }
 
-
     static index(req, res){
         Comment.findAll({
             include : [
@@ -59,8 +58,6 @@ class commentController{
             res.status(500).json(err)
         })
     }
-
-
 
     static async edit(req, res){
         let token = req.headers.token;

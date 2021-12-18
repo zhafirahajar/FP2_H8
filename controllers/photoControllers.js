@@ -2,7 +2,6 @@ const { Photo, Comment, User, Sequelize } = require("../models");
 const jwt = require("jsonwebtoken");
 
 class photoControllers{
-    //post new photo
     static async create(req, res){  
         let token = req.headers.token;
 		let user_login = jwt.verify(token, "secretkey");
@@ -52,8 +51,6 @@ class photoControllers{
                 {
                     model: Comment,
                     attributes: ['comment'],
-                    //required: true,
-                    //attributes: ['comment', [Sequelize.literal('"User"."username"'), 'username']]
                     include: [{
                         model: User,
                         attributes : ['username']
@@ -91,11 +88,6 @@ class photoControllers{
         res.status(403).json({massage: "You dont have permision on this photo"})
     }else{
         photo_instance.update({
-            /*
-            title : (req.body.title === undefined || req.body.title  === null || req.body.title === "") ? photo_instance.title : req.body.title,
-            caption : (req.body.caption === undefined || req.body.caption === null || req.body.caption === "") ? photo_instance.caption : req.body.caption,
-            poster_image_url: (req.body.poster_image_url === undefined || req.body.poster_image_url === null || req.body.poster_image_url === "") ? photo_instance.poster_image_url : req.body.poster_image_url
-            */
            title : req.body.title,
            caption : req.body.caption,
            poster_image_url: req.body.poster_image_url
@@ -105,7 +97,6 @@ class photoControllers{
                 photo:  data
             })
         }).catch(err=>{
-            //console.log(err)
             res.status(500).json(err)
         })
     }
@@ -121,9 +112,6 @@ class photoControllers{
                 id: req.params.photoId
             },
         }); 
-
-        //console.log(photo_instance)
-        
         if (photo_instance === null) {
             res.status(404).json({
                 message: "Photo doesn't exist.",
