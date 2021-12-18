@@ -26,17 +26,22 @@ class photoControllers{
             })
             .catch((err) => {
                 let errCode = 500;
-                let massage = ''
+                let errMessages = [];
+    
                 if(err.name.includes("SequelizeForeignKeyConstraint")){
                     errCode = 400
-                    massage = err.parent.detail
+                    errMessages.push(err.parent.detail);
                 }else if (err.name.includes("SequelizeValidation")) {
                     errCode = 400
-                    massage = err.errors
+                    for (let index in err.errors) {
+                        let errMsg = err.errors[index].message;
+                        errMessages.push(errMsg);
+                    }
                 }
                 res.status(errCode).json({
-                    message: massage
+                    message: errMessages
                 })
+
                 
             });                 
     }
@@ -69,8 +74,6 @@ class photoControllers{
         })
     }
 
- //edit photos
- //params tidak di kirim dia masih bisa lolos
     static async edit(req, res){
     let token = req.headers.token;
     let user_login = jwt.verify(token, "secretkey");

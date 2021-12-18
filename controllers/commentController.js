@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 
 class commentController{
     
-    //post new comment to photo
     static create(req, res){
         let token = req.headers.token;
 		let user_login = jwt.verify(token, "secretkey");
@@ -26,23 +25,26 @@ class commentController{
             })
         })
         .catch(err=>{
-            //console.log(err)
             let errCode = 500;
-            let massage = ''
+            let errMessages = [];
+
             if(err.name.includes("SequelizeForeignKeyConstraint")){
                 errCode = 400
-                massage = err.parent.detail
+                errMessages.push(err.parent.detail);
             }else if (err.name.includes("SequelizeValidation")) {
                 errCode = 400
-                massage = err.errors
+                for (let index in err.errors) {
+                    let errMsg = err.errors[index].message;
+                    errMessages.push(errMsg);
+                }
             }
             res.status(errCode).json({
-                message: massage
+                message: errMessages
             })
         })
     }
 
-    //get comments
+
     static index(req, res){
         Comment.findAll({
             include : [
@@ -59,8 +61,7 @@ class commentController{
     }
 
 
-    //edit komentar
-    // parameter comment tidak di kirim tidak terjadi error
+
     static async edit(req, res){
         let token = req.headers.token;
 		let user_login = jwt.verify(token, "secretkey");
@@ -93,7 +94,7 @@ class commentController{
         }
     }
 
-    //delete komentar
+
     static async delete(req, res){
         let token = req.headers.token;
 		let user_login = jwt.verify(token, "secretkey");
