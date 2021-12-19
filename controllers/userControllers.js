@@ -1,6 +1,7 @@
 const { User } = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { DataRowMessage } = require("pg-protocol/dist/messages");
 
 class userController {
 	static register(req, res) {
@@ -167,12 +168,26 @@ class userController {
 								password: hash,
 							});
 							res.status(200).json({
-								user: data,
+								user: {
+									email: data.email,
+									full_name: data.full_name,
+									username: data.username,
+									profile_image_url: data.profile_image_url,
+									age: data.age,
+									phone_number: data.phone_number,
+								},
 							});
 						}
 					} else {
 						res.status(200).json({
-							user: data,
+							user: {
+								email: data.email,
+								full_name: data.full_name,
+								username: data.username,
+								profile_image_url: data.profile_image_url,
+								age: data.age,
+								phone_number: data.phone_number,
+							},
 						});
 					}
 				})
