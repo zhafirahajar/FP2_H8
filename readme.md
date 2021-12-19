@@ -14,7 +14,7 @@
     <a href="https://github.com/zhafirahajar/FP2_H8"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="#heroku link">View Demo</a>
+    <a href="https://fp2-h8-mygram.herokuapp.com">Demo this API on heroku</a>
   </p>
 </div>
 
